@@ -9,13 +9,11 @@ import java.io.IOException;
 
 @Component
 public class BotMain {
-    private final RealTimeMessage msg;
     private final CheckingMessages checkingMessages;
     private boolean isProcess = true;
 
     @Autowired
-    public BotMain(RealTimeMessage msg, CheckingMessages checkingMessages) {
-        this.msg = msg;
+    public BotMain(CheckingMessages checkingMessages) {
         this.checkingMessages = checkingMessages;
     }
 
@@ -32,9 +30,8 @@ public class BotMain {
             public void run() {
                 while (isProcess) {
                     try {
-                        msg.start();
                         checkingMessages.check();
-                        Thread.sleep(15000L);
+                        Thread.sleep(1000L);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         isProcess = false;

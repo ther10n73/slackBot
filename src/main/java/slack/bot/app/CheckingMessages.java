@@ -1,6 +1,5 @@
 package slack.bot.app;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +17,8 @@ import java.io.IOException;
 public class CheckingMessages {
     private final HttpConnection httpConnection;
     private final SendMessages sendMessages;
+    private final static long PERIOD = 1000L;
+    private final String id = "U3K4J0L84";
 
     @Autowired
     public CheckingMessages(HttpConnection httpConnection, SendMessages sendMessages) {
@@ -26,14 +27,14 @@ public class CheckingMessages {
     }
 
     public ChannelHistoryCache check() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        long now = Instant.now().getMillis()/1000;
-        long period = 15000L;
-        String uri = ChanelRequestBuilder.newBuilder(HttpConstants.TOKEN, "C3K514LTC").setLatest(now).setOldest(now - period).build().toString();
+        String uri = ChanelRequestBuilder.newBuilder(HttpConstants.TOKEN, "C3K514LTC")
+                .setLatest(getTimeSeconds())
+                .setOldest(getTimeMinusPeriod())
+                .build().toString();
         System.out.println(uri);
         ChannelHistoryCache channel = sendMessages.sendMessages(uri, ChannelHistoryCache.class);
         channel.getMessages().stream()
-                .filter(m -> m.getText().contains("U3K4J0L84") && m.getText().toLowerCase().contains("привет"))
+                .filter(m -> m.getText().contains(id) && m.getText().toLowerCase().contains("привет"))
                 .findFirst()
                 .map(t -> {
                     try {
@@ -45,5 +46,13 @@ public class CheckingMessages {
                     return channel;
                 });
         return null;
+    }
+
+    private long getTimeSeconds() {
+        return Instant.now().getMillis()/1000L;
+    }
+
+    private long getTimeMinusPeriod() {
+        return getTimeSeconds() - PERIOD;
     }
 }
