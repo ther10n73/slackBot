@@ -4,48 +4,45 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import slack.bot.channel.ChanelRequestBuilder;
-import slack.bot.channel.ChannelHistoryCache;
+import slack.bot.channel.ChannelHistory.Message;
+import slack.bot.channel.ChannelList;
 import slack.bot.chat.MessageBuilder;
 import slack.bot.chat.MessageSendResult;
 import slack.bot.chat.SendMessages;
-import slack.bot.connection.HttpConnection;
 import slack.bot.connection.HttpConstants;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class CheckingMessages {
-    private final HttpConnection httpConnection;
+    private final HistoryCache historyCache;
+    private final ChatLists chatLists;
     private final SendMessages sendMessages;
-    private final static long PERIOD = 1000L;
+    private final static long PERIOD = 5000L;
     private final String id = "U3K4J0L84";
 
     @Autowired
-    public CheckingMessages(HttpConnection httpConnection, SendMessages sendMessages) {
-        this.httpConnection = httpConnection;
+    public CheckingMessages(HistoryCache historyCache, SendMessages sendMessages, ChatLists chatLists) {
+        this.chatLists = chatLists;
+        this.historyCache = historyCache;
         this.sendMessages = sendMessages;
     }
 
-    public ChannelHistoryCache check() throws IOException {
-        String uri = ChanelRequestBuilder.newBuilder(HttpConstants.TOKEN, "C3K514LTC")
+    public void check() throws IOException {
+        chatLists.getChannelAndGroupsList().forEach(g -> {
+        String uri = ChanelRequestBuilder.newBuilder(HttpConstants.TOKEN, g.getId())
                 .setLatest(getTimeSeconds())
                 .setOldest(getTimeMinusPeriod())
                 .build().toString();
         System.out.println(uri);
-        ChannelHistoryCache channel = sendMessages.sendMessages(uri, ChannelHistoryCache.class);
-        channel.getMessages().stream()
-                .filter(m -> m.getText().contains(id) && m.getText().toLowerCase().contains("привет"))
-                .findFirst()
-                .map(t -> {
-                    try {
-                        String answer = MessageBuilder.newBuilder(HttpConstants.TOKEN,"C3K514LTC", "Йо").build().toString();
-                        sendMessages.sendMessages(answer, MessageSendResult.class);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return channel;
-                });
-        return null;
+            try {
+                List<Message> msg = historyCache.execute(uri);
+                msg.forEach(m -> sendAnswer(m, g));
+            } catch (Exception e) {
+                System.out.println(e.getStackTrace());
+            }
+        });
     }
 
     private long getTimeSeconds() {
@@ -54,5 +51,21 @@ public class CheckingMessages {
 
     private long getTimeMinusPeriod() {
         return getTimeSeconds() - PERIOD;
+    }
+
+    private void sendAnswer(Message m, ChannelList.Channel g) {
+        if (m.getText().contains("U3K4J0L84") && !m.isSendAnswer()) {
+                String answer = MessageBuilder
+                        .newBuilder(HttpConstants.TOKEN, g.getId(), "привет")
+                        .build().toString();
+                try {
+                    System.out.println(m.hashCode());
+                    sendMessages.sendMessages(answer, MessageSendResult.class);
+                    m.setSendAnswer(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    m.setSendAnswer(false);
+                }
+        }
     }
 }

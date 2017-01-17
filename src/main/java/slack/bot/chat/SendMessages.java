@@ -1,10 +1,7 @@
 package slack.bot.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import slack.bot.channel.ChanelRequestBuilder;
-import slack.bot.channel.ChannelHistoryCache;
 import slack.bot.connection.HttpConnection;
-import slack.bot.connection.HttpConstants;
 
 import java.io.IOException;
 

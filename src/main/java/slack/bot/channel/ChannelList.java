@@ -3,18 +3,24 @@ package slack.bot.channel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ChannelList {
     @JsonProperty("ok")
     private String result;
+    @JsonProperty("channels")
+    private List<Channel> channels;
 
     public String getResult() {
         return result;
     }
 
-    class Channels {
+    public List<Channel> getChannels() {
+        return channels;
+    }
+
+    public static class Channel {
         @JsonProperty("id")
         private String id;
         @JsonProperty("name")
@@ -38,7 +44,7 @@ public class ChannelList {
         @JsonProperty("purpose")
         private Map<String, String> purpose;
         @JsonProperty("previous_names")
-        private String previousNames;
+        private List<String> previousNames;
         @JsonProperty("num_members")
         private String numMembers;
 
@@ -86,7 +92,7 @@ public class ChannelList {
             return purpose;
         }
 
-        public String getPreviousNames() {
+        public List<String> getPreviousNames() {
             return previousNames;
         }
 

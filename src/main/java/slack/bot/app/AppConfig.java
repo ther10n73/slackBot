@@ -8,11 +8,11 @@ import slack.bot.connection.HttpConnection;
 
 @Configuration
 public class AppConfig {
-    private RealTimeMessage realTimeMessage = new RealTimeMessage(new HttpConnection());
-    private CheckingMessages checkingMessages = new CheckingMessages(new HttpConnection(), new SendMessages(new HttpConnection(), new ObjectMapper()));
+    private SendMessages sendMessages = new SendMessages(new HttpConnection(), new ObjectMapper());
+    private CheckingMessages checkingMessages = new CheckingMessages(new HistoryCache(sendMessages), sendMessages, new ChatLists(sendMessages));
 
     @Bean
     public BotMain main() {
-        return new BotMain(realTimeMessage, checkingMessages);
+        return new BotMain(checkingMessages);
     }
 }

@@ -31,7 +31,7 @@ public class BotMain {
                 while (isProcess) {
                     try {
                         checkingMessages.check();
-                        Thread.sleep(1000L);
+                        Thread.sleep(5000L);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         isProcess = false;

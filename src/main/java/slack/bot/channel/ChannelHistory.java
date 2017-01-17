@@ -1,11 +1,14 @@
 package slack.bot.channel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 import java.util.Map;
 
-public class ChannelHistoryCache {
+public class ChannelHistory {
     @JsonProperty("ok")
     private String result;
     @JsonProperty("latest")
@@ -31,7 +34,7 @@ public class ChannelHistoryCache {
 
     @Override
     public String toString() {
-        return "ChannelHistoryCache{" +
+        return "ChannelHistory{" +
                 "result='" + result + '\'' +
                 ", messages=" + messages +
                 ", hasMore='" + hasMore + '\'' +
@@ -57,6 +60,8 @@ public class ChannelHistoryCache {
         private String user;
         @JsonProperty("ts")
         private String ts;
+        @JsonIgnore
+        private boolean isSendAnswer = true;
 
         public String getBotId() {
             return botId;
@@ -88,6 +93,28 @@ public class ChannelHistoryCache {
 
         public String getTs() {
             return ts;
+        }
+
+        public Map<String, String> getEdited() {
+            return edited;
+        }
+
+        public boolean isSendAnswer() {
+            return isSendAnswer;
+        }
+
+        public void setSendAnswer(boolean sendAnswer) {
+            isSendAnswer = sendAnswer;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return EqualsBuilder.reflectionEquals(this, o);
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
         }
 
         @Override
