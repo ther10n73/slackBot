@@ -1,5 +1,6 @@
 package slack.bot.app;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import java.io.IOException;
 public class BotMain {
     private final CheckingMessages checkingMessages;
     private boolean isProcess = true;
+    private static final Logger logger = Logger.getLogger(BotMain.class);
 
     @Autowired
     public BotMain(CheckingMessages checkingMessages) {
@@ -33,7 +35,7 @@ public class BotMain {
                         checkingMessages.check();
                         Thread.sleep(5000L);
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        logger.error("Failed start application.", e);
                         isProcess = false;
                     }
                 }

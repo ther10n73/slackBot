@@ -1,16 +1,16 @@
 package slack.bot.app;
 
+import org.apache.log4j.Logger;
 import slack.bot.channel.ChannelHistory;
 import slack.bot.channel.ChannelHistory.Message;
 import slack.bot.chat.SendMessages;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryCache {
     private final SendMessages sendMessages;
     private List<Message> messages;
+    private static final Logger logger = Logger.getLogger(HistoryCache.class);
 
     public HistoryCache(SendMessages sendMessages) {
         this.sendMessages = sendMessages;
@@ -21,6 +21,7 @@ public class HistoryCache {
 
     List<Message> execute(String uri) {
         try {
+            logger.info("channels.history: " + uri);
             sendMessages.sendMessages(uri, ChannelHistory.class)
                     .getMessages()
                     .forEach(m -> {
@@ -32,7 +33,7 @@ public class HistoryCache {
                         }
                     });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("Can't get history message.", e);
         }
         return messages;
     }

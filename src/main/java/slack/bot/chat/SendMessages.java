@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import slack.bot.connection.HttpConnection;
 
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
 public class SendMessages {
     private final HttpConnection httpConnection;
     private final ObjectMapper mapper;
+    private final static Logger logger = Logger.getLogger(SendMessages.class);
 
     public SendMessages(HttpConnection httpConnection, ObjectMapper mapper) {
         this.httpConnection = httpConnection;
@@ -15,9 +17,8 @@ public class SendMessages {
     }
 
     public <T> T sendMessages(String uri, Class<T> clazz) throws IOException {
-        System.out.println("chat.meMessage: uri = " + uri);
         String response = httpConnection.send(uri);
-        System.out.println(response);
+        logger.info("respose: " + response);
         return mapper.readValue(response.getBytes(), clazz);
     }
 }

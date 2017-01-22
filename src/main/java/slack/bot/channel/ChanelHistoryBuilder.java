@@ -2,14 +2,15 @@ package slack.bot.channel;
 
 import slack.bot.app.RequestBuilder;
 
-public class ChanelRequestBuilder extends RequestBuilder {
+public class ChanelHistoryBuilder extends RequestBuilder {
     private final static String CHANNEL_HISTORY = "channels.history";
-    private ChanelRequestBuilder(String token, String channel) {
+
+    private ChanelHistoryBuilder(String token, String channel) {
         super(token, channel);
     }
 
     public static Builder newBuilder(String token, String channel) {
-        return new ChanelRequestBuilder(token, channel).new Builder();
+        return new ChanelHistoryBuilder(token, channel).new Builder();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class ChanelRequestBuilder extends RequestBuilder {
 
         @Override
         public String toString() {
-            return ChanelRequestBuilder.this.toString() + requestPath.toString() + "&pretty=1";
+            return ChanelHistoryBuilder.this.toString() + requestPath.toString() + END_OF_REQUEST;
         }
     }
 }

@@ -1,7 +1,10 @@
 package slack.bot.app;
 
+import slack.bot.users.UserRequestBuilder;
+
 public class RequestBuilder {
     public final static String SLACK_HOST = "https://slack.com/api/";
+    public final static String END_OF_REQUEST = "&pretty=1";
     private final String token;
     private final String channel;
 
